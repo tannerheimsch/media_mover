@@ -16,7 +16,7 @@ Media Mover is a simple tool that allows users to organize their TV shows and mo
 Before using Media Mover, make sure you have the following installed:
 
 - [TeraCopy](https://www.codesector.com/teracopy)
-- Python 3.x
+- *(Optional)* Python 3.x
 
 ## Usage
 
