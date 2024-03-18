@@ -1,6 +1,5 @@
 import os
 import subprocess
-import platform
 
 def clear_screen():
     # This function will not clear the screen if the error message is displayed.
@@ -9,7 +8,6 @@ def clear_screen():
     else:
         _ = os.system('cls')
 
-
 def print_ascii_art():
     print(r"""
  __    __     ______     _____     __     ______        __    __     ______     __   __   ______     ______    
@@ -17,7 +15,7 @@ def print_ascii_art():
 \ \ \-./\ \  \ \  __\   \ \ \/\ \ \ \ \  \ \  __ \     \ \ \-./\ \  \ \ \/\ \  \ \ \'/   \ \  __\   \ \  __<   
  \ \_\ \ \_\  \ \_____\  \ \____-  \ \_\  \ \_\ \_\     \ \_\ \ \_\  \ \_____\  \ \__|    \ \_____\  \ \_\ \_\ 
   \/_/  \/_/   \/_____/   \/____/   \/_/   \/_/\/_/      \/_/  \/_/   \/_____/   \/_/      \/_____/   \/_/ /_/ 
-                                                                                                            v2.2                                                                                    
+                                                                                                            v2.3                                                                                    
           """)
 
 def list_subfolders(root='.', option=None):
@@ -42,26 +40,32 @@ def move_subfolders(subfolders, destination, option, teracopy_path):
     for main_folder, subfolders_list in subfolders.items():
         print(f"- {main_folder}: {', '.join(subfolders_list)}\n")
     prompt = "Enter the name of the TV show(s) you want to move (from the names above, separated by commas):\n" if option == '1' else "Enter the name of the movie(s), including the file type, that you want to move (from the names above, separated by commas):\n"
-    selected_subfolders = input(prompt).split(',')
-    for subfolder in selected_subfolders:
-        found = False
-        for main_folder, subfolders_list in subfolders.items():
-            if subfolder.strip() in subfolders_list:
-                source = os.path.abspath(os.path.join(main_folder, subfolder.strip()))
-                if subfolder.endswith(('.mp4', '.mkv')):
-                    folder_name = os.path.splitext(subfolder.strip())[0]
-                    destination_folder = os.path.join(destination, folder_name)
-                    os.makedirs(destination_folder, exist_ok=True)
-                    destination = destination_folder
-                if os.path.exists(teracopy_path):
-                    subprocess.run([teracopy_path, 'Move', source, destination, '/OverwriteAll', '/Close'])
-                    print(f"\nMoved {subfolder} to {destination}\n")
-                else:
-                    print("\nERROR: TeraCopy.exe not found, please change the .exe destination.\n")
-                found = True
-                break
-        if not found:
-            print(f"Subfolder '{subfolder.strip()}' not found.")
+    
+    while True:
+        selected_subfolders = input(prompt).split(',')
+        all_found = True
+        for subfolder in selected_subfolders:
+            found = False
+            for main_folder, subfolders_list in subfolders.items():
+                if subfolder.strip() in subfolders_list:
+                    found = True
+                    source = os.path.abspath(os.path.join(main_folder, subfolder.strip()))
+                    if subfolder.endswith(('.mp4', '.mkv')):
+                        folder_name = os.path.splitext(subfolder.strip())[0]
+                        destination_folder = os.path.join(destination, folder_name)
+                        os.makedirs(destination_folder, exist_ok=True)
+                        destination = destination_folder
+                    if os.path.exists(teracopy_path):
+                        subprocess.run([teracopy_path, 'Move', source, destination, '/OverwriteAll', '/Close'])
+                        print(f"\nMoved {subfolder} to {destination}\n")
+                    else:
+                        print("\nERROR: TeraCopy.exe not found, please change the .exe destination.\n")
+                    break
+            if not found:
+                print(f"Subfolder '{subfolder.strip()}' not found.")
+                all_found = False
+        if all_found:
+            break
 
 def set_destination_paths():
     clear_screen()
@@ -106,7 +110,6 @@ def set_destination_paths():
             print("")
             break  # Exit the loop and go back to the main menu
         else:
-            print("Invalid selection.")
             print("Invalid selection.")
 
 def main():
